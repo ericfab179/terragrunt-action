@@ -4,6 +4,6 @@ MAINTAINER Gruntwork <info@gruntwork.io>
 
 COPY ["./src/main.sh", "/action/main.sh"]
 
-# ENTRYPOINT ["/action/main.sh"]
-ENTRYPOINT [""]
-CMD ["sleep", "1200"]
+ENTRYPOINT ["/action/main.sh"]
+# ENTRYPOINT [""]
+# CMD ["sleep", "1200"]
