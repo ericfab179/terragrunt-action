@@ -27,6 +27,14 @@ inputs:
     description: 'Add -auto-approve to commands which require changes to be applied'
     default: '1'
     required: false
+  tg_stdout_file:
+    description: 'Terragrunt command stdout file.'
+    default: 'tg_stdout'
+    required: false
+  tg_stderr_file:
+    description: 'Terragrunt command stdout file.'
+    default: 'tg_stderr'
+    required: false
 outputs:
   tg_action_output:
     description: 'Terragrunt execution output'

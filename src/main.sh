@@ -23,6 +23,7 @@ function clean_multiline_text {
   output="${output//$'\n'/'%0A'}"
   output="${output//$'\r'/'%0D'}"
   output="${output//$'<'/'%3C'}"
+  output="${output//$'`'/'%60'}"
   echo "${output}"
 }
 
@@ -53,12 +54,15 @@ function install_terragrunt {
 function run_terragrunt {
   local -r dir="$1"
   local -r command=($2)
+  local -r stdout_file=($3)
+  local -r stderr_file=($4)
 
   # terragrunt_log_file can be used later as file with execution output
   terragrunt_log_file=$(mktemp)
 
   cd "${dir}"
-  terragrunt "${command[@]}" 2>&1 | tee "${terragrunt_log_file}"
+  terragrunt "${command[@]}" 2> "${stderr_file}" 1> "${stdout_file}"
+  cat "${stdout_file}" "${stderr_file}" > "${terragrunt_log_file}"
   # terragrunt_exit_code can be used later to determine if execution was successful
   terragrunt_exit_code=${PIPESTATUS[0]}
 }
@@ -140,6 +144,8 @@ function main {
   local -r tf_version=${INPUT_TF_VERSION}
   local -r tg_version=${INPUT_TG_VERSION}
   local -r tg_command=${INPUT_TG_COMMAND}
+  local -r tg_stdout_file=${INPUT_TG_STDOUT_FILE}
+  local -r tg_stderr_file=${INPUT_TG_STDERR_FILE}
   local -r tg_comment=${INPUT_TG_COMMENT:-0}
   local -r tg_add_approve=${INPUT_TG_ADD_APPROVE:-1}
   local -r tg_dir=${INPUT_TG_DIR:-.}
@@ -183,7 +189,7 @@ function main {
       fi
     fi
   fi
-  run_terragrunt "${tg_dir}" "${tg_arg_and_commands}"
+  run_terragrunt "${tg_dir}" "${tg_arg_and_commands}" "${tg_stdout_file}" "${tg_stderr_file}"
   setup_permissions "${tg_dir}"
   # setup permissions for the output files
   setup_post_exec
